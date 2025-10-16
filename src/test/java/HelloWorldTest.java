@@ -4,7 +4,7 @@ public class HelloWorldTest {
 
     @Test
     public void testHelloWorld(){
-        String name = "Максим";
+        String name = "Максим!";
         System.out.println("Hello World" + " " + name);
     }
 }
