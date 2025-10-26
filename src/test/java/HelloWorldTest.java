@@ -1,47 +1,48 @@
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
+import io.restassured.path.json.JsonPath;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HelloWorldTest {
 
     @Test
-    public void testRestAssured(){
-        String URL = "https://playground.learnqa.ru/api/long_redirect";
-        Response resp = RestAssured
-                .given()
-                .redirects()
-                .follow(false)
-                .when()
+    public void testRestAssured() throws InterruptedException {
+        String URL = "https://playground.learnqa.ru/ajax/api/longtime_job";
+
+        JsonPath resp = RestAssured
                 .get(URL)
-                .andReturn();
-        int statusCode = resp.getStatusCode();
+                .jsonPath();
+        String token = resp.get("token");
+        int time = resp.get("seconds");
+        //System.out.println(token + " " + time);
 
-        while(statusCode >= 300 && statusCode < 400) {
-            System.out.println(URL + " со статусом " + statusCode);
+        Map<String, String> params = new HashMap<>();
+        params.put("token", token);
 
-            String UrlNext = resp.getHeader("Location");
-            URL = UrlNext;
-
-            resp = RestAssured
-                    .given()
-                    .redirects()
-                    .follow(false)
-                    .when()
-                    .get(URL)
-                    .andReturn();
-            statusCode = resp.getStatusCode();
-
-        }
-        resp = RestAssured
+        JsonPath requestBefore = RestAssured
                 .given()
-                .redirects()
-                .follow(true)
-                .when()
+                .queryParams(params)
                 .get(URL)
-                .andReturn();
+                .jsonPath();
+        String statusBefore = requestBefore.get("status");
+        System.out.println("Статус до готовности задачи: " + statusBefore);
 
-        statusCode = resp.getStatusCode();
-        System.out.println("Финальный URL " + URL + " со статусом " + statusCode);
+        Thread.sleep(time * 1000);
+        JsonPath requestAfter = RestAssured
+                .given()
+                .queryParams(params)
+                .get(URL)
+                .jsonPath();
+        String statusAfter = requestAfter.get("status");
+        String result = requestAfter.get("result");
+        System.out.println("Статус после выполнения задачи: " + statusAfter);
+        System.out.println("Результат: " + result);
+
+
+
+
 
     }
 }
