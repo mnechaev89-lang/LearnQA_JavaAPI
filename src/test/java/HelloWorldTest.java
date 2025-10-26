@@ -1,16 +1,21 @@
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
-
+import io.restassured.path.json.JsonPath;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HelloWorldTest {
 
     @Test
-    public void testHelloWorld(){
-        Response resp = RestAssured
-                .get("https://playground.learnqa.ru/api/get_text")
-                .andReturn();
-        resp.prettyPrint();
+    public void testRestAssured(){
+
+
+        JsonPath resp = RestAssured
+                .get("https://playground.learnqa.ru/api/get_json_homework")
+                .jsonPath();
+        String message2 = resp.get("messages[1].message");
+        System.out.println(message2);
 
     }
 }
