@@ -1,21 +1,47 @@
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class HelloWorldTest {
 
     @Test
     public void testRestAssured(){
+        String URL = "https://playground.learnqa.ru/api/long_redirect";
+        Response resp = RestAssured
+                .given()
+                .redirects()
+                .follow(false)
+                .when()
+                .get(URL)
+                .andReturn();
+        int statusCode = resp.getStatusCode();
 
+        while(statusCode >= 300 && statusCode < 400) {
+            System.out.println(URL + " со статусом " + statusCode);
 
-        JsonPath resp = RestAssured
-                .get("https://playground.learnqa.ru/api/get_json_homework")
-                .jsonPath();
-        String message2 = resp.get("messages[1].message");
-        System.out.println(message2);
+            String UrlNext = resp.getHeader("Location");
+            URL = UrlNext;
+
+            resp = RestAssured
+                    .given()
+                    .redirects()
+                    .follow(false)
+                    .when()
+                    .get(URL)
+                    .andReturn();
+            statusCode = resp.getStatusCode();
+
+        }
+        resp = RestAssured
+                .given()
+                .redirects()
+                .follow(true)
+                .when()
+                .get(URL)
+                .andReturn();
+
+        statusCode = resp.getStatusCode();
+        System.out.println("Финальный URL " + URL + " со статусом " + statusCode);
 
     }
 }
