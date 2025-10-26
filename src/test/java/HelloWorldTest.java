@@ -16,7 +16,6 @@ public class HelloWorldTest {
                 .jsonPath();
         String token = resp.get("token");
         int time = resp.get("seconds");
-        //System.out.println(token + " " + time);
 
         Map<String, String> params = new HashMap<>();
         params.put("token", token);
