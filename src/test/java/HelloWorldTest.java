@@ -15,7 +15,8 @@ public class HelloWorldTest {
                 .get("https://playground.learnqa.ru/api/get_json_homework")
                 .jsonPath();
         String message2 = resp.get("messages[1].message");
-        System.out.println(message2);
+        String time2 = resp.get("messages[1].timestamp");
+        System.out.println(message2 + ": " + time2);
 
     }
 }
