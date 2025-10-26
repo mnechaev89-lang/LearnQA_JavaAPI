@@ -1,22 +1,21 @@
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
+import io.restassured.path.json.JsonPath;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.Map;
 
 public class HelloWorldTest {
 
     @Test
     public void testRestAssured(){
-        Response resp = RestAssured
-                .given()
-                .redirects()
-                .follow(false)
-                .when()
-                .get("https://playground.learnqa.ru/api/long_redirect")
-                .andReturn();
 
-        String redirectUrl = resp.getHeader("Location");
-        System.out.println("Редиректит на URL : " + redirectUrl);
+
+        JsonPath resp = RestAssured
+                .get("https://playground.learnqa.ru/api/get_json_homework")
+                .jsonPath();
+        String message2 = resp.get("messages[1].message");
+        System.out.println(message2);
 
     }
 }
