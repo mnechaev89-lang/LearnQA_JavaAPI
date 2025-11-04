@@ -18,7 +18,7 @@ public class StringSizeTest {
                 .get("https://playground.learnqa.ru/api/homework_header")
                 .andReturn();
 
-        //Headers responseHeader = response.getHeaders();
+        //Headers responseHeader = response.getHeaders();i
         //System.out.println("Headers response: " + "\n" + responseHeader);
         String headerValue = response.getHeader("x-secret-homework-header");
         System.out.println("Значение заголовка 'x-secret-homework-header': " + headerValue);
