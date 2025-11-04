@@ -1,14 +1,24 @@
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StringSizeTest {
 
     @Test
-    public void testStringSize() {
+    public void testCookieValue() {
 
-        String sentence = "Hello, world";
-        int size = 15;
+        Response responseCookie = RestAssured
+                .get("https://playground.learnqa.ru/api/homework_cookie")
+                .andReturn();
 
-        assertEquals(size, sentence.length());
+
+        String cookieValue = responseCookie.getCookie("HomeWork");
+        System.out.println("Куки: " + cookieValue);
+
+        assertEquals("hw_value", cookieValue, "Cookie HomeWork должна быть 'hw_value'");
+
+
     }
 }
