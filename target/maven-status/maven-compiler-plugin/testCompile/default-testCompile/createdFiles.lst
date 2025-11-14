@@ -1,1 +1,7 @@
-HelloWorldTest.class
+lib\DataGenerator.class
+lib\BaseTestCase.class
+tests\UserAuthTest.class
+tests\UserRegisterTest.class
+lib\Assertions.class
+lib\ApiCoreRequests.class
+tests\UserEditTest.class
