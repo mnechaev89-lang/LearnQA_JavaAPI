@@ -86,4 +86,5 @@ public class UserAuthTest extends BaseTestCase {
             throw new IllegalArgumentException("Condition value is not known" + condition);
         }
     }
+
 }
