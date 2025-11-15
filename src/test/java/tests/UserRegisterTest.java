@@ -11,7 +11,6 @@ import io.qameta.allure.Feature;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.HashMap;
@@ -58,7 +57,7 @@ public class UserRegisterTest extends BaseTestCase {
 
         // Ожидаем успех (200) и что в ответе есть поле "id"
         Assertions.assertResponseCodeEquals(responseCreateAuth, 200);// responseCreateAuth - это уже ОТВЕТ от сервера
-        Assertions.assertJsonHasKey(responseCreateAuth, "id"); // проверяем, что в ответе есть поле "id" - сервер создал пользователя и присвоил ему ID
+        Assertions.assertJsonHasField(responseCreateAuth, "id"); // проверяем, что в ответе есть поле "id" - сервер создал пользователя и присвоил ему ID
     }
 
 
