@@ -1,13 +1,11 @@
 package tests;
-import io.qameta.allure.Description;
+import io.qameta.allure.*;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import lib.Assertions;
 import lib.BaseTestCase;
 import lib.DataGenerator;
 import lib.ApiCoreRequests;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,12 +16,16 @@ import java.util.Map;
 
 @Epic("Authorisation cases")
 @Feature("Authorization")
+@Link(name = "API Documentation", url = "https://bla_bla/api-doc")
 
 public class UserRegisterTest extends BaseTestCase {
 
     private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
 
-    @Test // Пытаемся зарегистрировать пользователя с уже существующим email
+    @Test
+    @DisplayName("Register with existing email") // Пытаемся зарегистрировать пользователя с уже существующим email
+    @Severity(SeverityLevel.NORMAL)
+
     public void testCreateUserWithExistingEmail(){ //Проверияем, что система правильно реагирует на попытку регистрации с уже существующим email
         String email = "vinkotov@example.com";
 
@@ -34,7 +36,7 @@ public class UserRegisterTest extends BaseTestCase {
         Response responseCreateAuth = RestAssured //Сохраняем ответ сервера в переменную responseCreateAuth
                 .given()
                 .body(userData) //Передаем наши данные (с существующим email)
-                .post("https://playground.learnqa.ru/api/user/")// Отправляем POST-запрос на регистрацию пользователя
+                .post(Dev_URL + "user/")// Отправляем POST-запрос на регистрацию пользователя
                 .andReturn();
 
         // Ожидаем ошибку 400 и определенный текст
@@ -43,6 +45,8 @@ public class UserRegisterTest extends BaseTestCase {
     }
 
     @Test //Проверить, что регистрация нового пользователя работает корректно
+    @DisplayName("Successful user registration")
+    @Severity(SeverityLevel.BLOCKER)
     public void testCreateUserSuccessfully(){
         // Регистрируем нового пользователя
         String email = DataGenerator.getRandomEmail(); //создает УНИКАЛЬНЫЙ email на основе времени
@@ -52,7 +56,7 @@ public class UserRegisterTest extends BaseTestCase {
         Response responseCreateAuth = RestAssured
                 .given()
                 .body(userData)
-                .post("https://playground.learnqa.ru/api/user/")
+                .post(Dev_URL + "user/")
                 .andReturn();
 
         // Ожидаем успех (200) и что в ответе есть поле "id"
@@ -64,6 +68,7 @@ public class UserRegisterTest extends BaseTestCase {
     @Test
     @Description("This test tries to register a user without symbol '@' on email")
     @DisplayName("Test registration without symbol '@'")
+    @Severity(SeverityLevel.NORMAL)
 
     public void testCreateUserWithInvalidEmail() {
         String invalidEmail = "learnqablablabla.com";
@@ -71,7 +76,7 @@ public class UserRegisterTest extends BaseTestCase {
         userData.put("email", invalidEmail);
 
         Response response = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/",
+                Dev_URL + "user/",
                 userData
         );
         //System.out.println(response.asString());
@@ -90,13 +95,14 @@ public class UserRegisterTest extends BaseTestCase {
     @DisplayName("Test without one fields for registration")
     @ParameterizedTest
     @ValueSource(strings = {"email", "password", "username", "firstName", "lastName"})
+    @Severity(SeverityLevel.NORMAL)
 
     public void testCreateUserWithoutField(String fieldName) {
         Map<String, String> userData = DataGenerator.getRegistrationData();
         userData.remove(fieldName);
 
         Response response = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/",
+                Dev_URL + "user/",
                 userData
         );
         //System.out.println(response.statusCode());
@@ -111,13 +117,14 @@ public class UserRegisterTest extends BaseTestCase {
     @Test
     @Description("This test tries to register a user without one symbol on firstName")
     @DisplayName("Test registration without one symbol on firstName")
+    @Severity(SeverityLevel.NORMAL)
 
     public void testCreateUserWithShortName() {
         Map<String, String> userData = DataGenerator.getRegistrationData();
         userData.put("firstName", "x");
 
         Response response = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/",
+                Dev_URL + "user/",
                 userData
         );
         //System.out.println(response.asString());
@@ -129,6 +136,7 @@ public class UserRegisterTest extends BaseTestCase {
     @Test
     @Description("This test tries to register a user without 250 symbol on firstName")
     @DisplayName("Test registration without 250 symbol on firstName")
+    @Severity(SeverityLevel.NORMAL)
 
     public void testCreateUserWithLongName() {
         String longName = "aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffgggggggggghhhhhhhhhhiiiiiiiiiijjjjjjjjjjkkkkkkkkkkllllllllllmmmmmmmmmmnnnnnnnnnnooooooooooppppppppppqqqqqqqqqqrrrrrrrrrrssssssssssttttttttttuuuuuuuuuuvvvvvvvvvvwwwwwwwwwwxxxxxxxxxxyyyyyyyyyyz";
@@ -136,7 +144,7 @@ public class UserRegisterTest extends BaseTestCase {
         userData.put("firstName", longName);
 
         Response response = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/",
+                Dev_URL + "user/",
                 userData
         );
         //System.out.println(response.asString());

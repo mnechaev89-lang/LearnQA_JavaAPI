@@ -28,4 +28,6 @@ public class BaseTestCase {
         Response.then().assertThat().body("$", hasKey(name));
         return Response.jsonPath().getInt(name);// получаем name как число из ответа
     }
+
+    protected static final String Dev_URL = "https://playground.learnqa.ru/api_dev/";
 }

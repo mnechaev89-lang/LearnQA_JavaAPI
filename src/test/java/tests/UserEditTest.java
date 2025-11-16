@@ -1,8 +1,6 @@
 package tests;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
+import io.qameta.allure.*;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
@@ -10,28 +8,30 @@ import lib.ApiCoreRequests;
 import lib.Assertions;
 import lib.BaseTestCase;
 import lib.DataGenerator;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Epic("User edit cases")
-@Feature("User Editing")
+@Epic("User edit tests")
+@Feature("User editing")
+@Link(name = "API Documentation", url = "https://bla_bla/api-doc")
 
 public class UserEditTest extends BaseTestCase {
 
     private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
 
     @Test // создание пользователя
+    @DisplayName("Positive: Edit just created user")
+    @Severity(SeverityLevel.BLOCKER)
     public void testEditJustCreatedTest() {
         Map<String, String>  userData = DataGenerator.getRegistrationData(); //Создаем тестовые данные для нового пользователя (случайный email, пароль и т.д.)
 
         JsonPath responseCreateAuth = RestAssured
                 .given()
                 .body(userData)
-                .post("https://playground.learnqa.ru/api/user/")
+                .post(Dev_URL + "user/")
                 .jsonPath();
 
         String userId = responseCreateAuth.getString("id"); //Сохраняем ID созданного пользователя из ответа сервера
@@ -45,7 +45,7 @@ public class UserEditTest extends BaseTestCase {
         Response responseGetAuth = RestAssured
                 .given()
                 .body(authData)
-                .post("https://playground.learnqa.ru/api/user/login")
+                .post(Dev_URL+ "user/login")
                 .andReturn();
         //Получаем токены авторизации (cookie и header), которые нужны для последующих запросов
 
@@ -62,7 +62,7 @@ public class UserEditTest extends BaseTestCase {
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth,"auth_sid"))
                 .body(editData) //Отправляем только изменяемые поля (в данном случае только firstName)
-                .put("https://playground.learnqa.ru/api/user/" + userId) //редактируем конкретного пользователя по ID
+                .put(Dev_URL + "user/" + userId) //редактируем конкретного пользователя по ID
                 .andReturn();
 
         //GET
@@ -71,7 +71,7 @@ public class UserEditTest extends BaseTestCase {
                 //Снова передаем авторизацию (также нужна для доступа к данным)
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
-                .get("https://playground.learnqa.ru/api/user/" + userId) //Запрашиваем обновленные данные пользователя через GET-запрос
+                .get(Dev_URL + "user/" + userId) //Запрашиваем обновленные данные пользователя через GET-запрос
                 .andReturn();
 
         Assertions.asserJsonByName(responseUserData, "firstName", newName); //Проверяем, что имя действительно изменилось на "Changed Name"
@@ -81,10 +81,11 @@ public class UserEditTest extends BaseTestCase {
     @Test
     @Description("Try to edit user without authorization")
     @DisplayName("Test edit user without auth")
+    @Severity(SeverityLevel.NORMAL)
     public void testEditUserWithoutAuth() {
             Map<String, String> userData = DataGenerator.getRegistrationData();
             Response createResponse = apiCoreRequests.makePostRequest(
-                    "https://playground.learnqa.ru/api/user/",
+                    Dev_URL + "user/",
                     userData
             );
 
@@ -93,7 +94,7 @@ public class UserEditTest extends BaseTestCase {
             Map<String, String> editData = new HashMap<>();
             editData.put("firstName", "New Name");
             Response editResponse = apiCoreRequests.makePutRequest(
-                    "https://playground.learnqa.ru/api/user/" + userId,
+                    Dev_URL + "user/" + userId,
                     editData
             );
             System.out.println(editResponse.asString());
@@ -105,10 +106,11 @@ public class UserEditTest extends BaseTestCase {
     @Test
     @Description("Try to edit user being authorized as another user")
     @DisplayName("Test edit user as other user")
+    @Severity(SeverityLevel.CRITICAL)
     public void testEditUserAsOtherUser() {
         Map<String, String> user1Data = DataGenerator.getRegistrationData();
         Response createUser1 = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/",
+                Dev_URL + "user/",
                 user1Data
         );
 
@@ -116,7 +118,7 @@ public class UserEditTest extends BaseTestCase {
 
         Map<String, String> userData2 = DataGenerator.getRegistrationData();
         Response createUser2Response = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/",
+                Dev_URL + "user/",
                 userData2
         );
 
@@ -125,7 +127,7 @@ public class UserEditTest extends BaseTestCase {
         authData.put("password", userData2.get("password"));
 
         Response loginResponse = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/login",
+                Dev_URL + "user/login",
                 authData
         );
 
@@ -136,7 +138,7 @@ public class UserEditTest extends BaseTestCase {
         editData.put("firstName", "Bla Name");
 
         Response editResponse = apiCoreRequests.makePutRequest(
-                "https://playground.learnqa.ru/api/user/" + user1Id,  // Чужой ID!
+                Dev_URL + "user/" + user1Id,  // Чужой ID!
                 header,
                 cookie,
                 editData
@@ -150,11 +152,12 @@ public class UserEditTest extends BaseTestCase {
     @Test
     @Description("Try to edit email to invalid format without @ symbol")
     @DisplayName("Test edit user with invalid email")
+    @Severity(SeverityLevel.NORMAL)
     public void testEditUserWithInvalidEmail() {
         Map<String, String> userData = DataGenerator.getRegistrationData();
 
         Response createResponse = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/",
+                Dev_URL + "user/",
                 userData
         );
 
@@ -165,7 +168,7 @@ public class UserEditTest extends BaseTestCase {
         authData.put("password", userData.get("password"));
 
         Response loginResponse = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/login",
+                Dev_URL + "user/login",
                 authData
         );
 
@@ -176,7 +179,7 @@ public class UserEditTest extends BaseTestCase {
         editData.put("email", "incorrectFormatEmail.com");
 
         Response editResponse = apiCoreRequests.makePutRequest(
-                "https://playground.learnqa.ru/api/user/" + userId,
+                Dev_URL + "user/" + userId,
                 header,
                 cookie,
                 editData
@@ -190,10 +193,11 @@ public class UserEditTest extends BaseTestCase {
     @Test
     @Description("Try to edit firstName to change to one character")
     @DisplayName("Test edit user with too short firstName")
+    @Severity(SeverityLevel.NORMAL)
     public void testEditUserWithShortFirstName() {
         Map<String, String> userData = DataGenerator.getRegistrationData();
         Response createResponse = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/",
+                Dev_URL+ "user/",
                 userData
         );
 
@@ -204,7 +208,7 @@ public class UserEditTest extends BaseTestCase {
         authData.put("password", userData.get("password"));
 
         Response loginResponse = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/login",
+                Dev_URL + "user/login",
                 authData
         );
 
@@ -215,7 +219,7 @@ public class UserEditTest extends BaseTestCase {
         editData.put("firstName", "x");  // Всего 1 символ!
 
         Response editResponse = apiCoreRequests.makePutRequest(
-                "https://playground.learnqa.ru/api/user/" + userId,
+                Dev_URL+ "user/" + userId,
                 header,
                 cookie,
                 editData

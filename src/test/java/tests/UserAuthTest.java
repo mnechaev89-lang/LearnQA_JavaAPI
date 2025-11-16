@@ -1,5 +1,6 @@
 package tests;
 
+import io.qameta.allure.*;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
@@ -17,13 +18,12 @@ import lib.ApiCoreRequests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
 import org.junit.jupiter.api.DisplayName;
 
 @Epic("Authorisation cases") // означает, что последующие тесты принадлежат большой общей части "Authorisation cases"
 @Feature("Authorization") // название фичи
+@Severity(SeverityLevel.CRITICAL)
+@Link(name = "API Documentation", url = "https://bla_bla/api-doc")
 public class UserAuthTest extends BaseTestCase {
 
     String cookie;
@@ -40,7 +40,7 @@ public class UserAuthTest extends BaseTestCase {
         authData.put("password", "1234");
 
         Response responseGetAuth = apiCoreRequests
-                .makePostRequest("https://playground.learnqa.ru/api/user/login", authData);
+                .makePostRequest(Dev_URL + "user/login", authData);
 
 
         //Сохраняем данные авторизации для использования в тестах
@@ -53,11 +53,12 @@ public class UserAuthTest extends BaseTestCase {
     @Test // Проверить, что при правильной авторизации система возвращает правильный user_id
     @Description("This test successfully authorize user by email and password") // описание теста. показывает в отчете, что именно тест проверяет
     @DisplayName("Test positive auth user") //название теста в отчете
+    @Severity(SeverityLevel.BLOCKER)
     public void testAuthUser(){
 
         Response responseCheckAuth = apiCoreRequests
                 .makeGetRequest(
-                        "https://playground.learnqa.ru/api/user/auth",
+                        Dev_URL + "user/auth",
                         this.header,
                         this.cookie
                 );
@@ -69,16 +70,17 @@ public class UserAuthTest extends BaseTestCase {
     @DisplayName("Test negative auth user")
     @ParameterizedTest
     @ValueSource(strings = {"cookie", "headers"})
+    @Severity(SeverityLevel.CRITICAL)
     public void testNegativeAythUser(String condition){ // Проверяем, что при НЕПОЛНОЙ авторизации система не узнает пользователя
         if(condition.equals("cookie")) {
             Response responseForCheck = apiCoreRequests.makeGetRequestWithCookie(
-                    "https://playground.learnqa.ru/api/user/auth",
+                    Dev_URL + "user/auth",
                     this.cookie
             );
             Assertions.asserJsonByName(responseForCheck, "user_id", 0);
         } else if (condition.equals("headers")) {
             Response responseForCheck = apiCoreRequests.makeGetRequestWithToken(
-                    "https://playground.learnqa.ru/api/user/auth",
+                    Dev_URL + "user/auth",
                     this.header
             );
             Assertions.asserJsonByName(responseForCheck, "user_id", 0);

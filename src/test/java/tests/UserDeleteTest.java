@@ -1,8 +1,6 @@
 package tests;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
+import io.qameta.allure.*;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
@@ -17,11 +15,17 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+@Epic("Deleting users tests")
+@Feature("Deleting users")
+@Link(name = "API Documentation", url = "https://bla_bla/api-doc")
+
+
 public class UserDeleteTest extends BaseTestCase{
 
     String cookie;
     String header;
     int userIdOnAuth;
+
     private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
 
 
@@ -32,7 +36,7 @@ public class UserDeleteTest extends BaseTestCase{
         authData.put("password", "1234");
 
         Response responseLogin = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/login",
+                Dev_URL + "user/login",
                 authData
         );
 
@@ -44,9 +48,10 @@ public class UserDeleteTest extends BaseTestCase{
     @Test
     @Description("Try to delete protected user with ID 2")
     @DisplayName("Test delete protected user")
+    @Severity(SeverityLevel.NORMAL)
     public void testDeleteUserId2() {
         Response response = apiCoreRequests.makeDeleteRequest(
-                "https://playground.learnqa.ru/api/user/" + userIdOnAuth,
+                Dev_URL + "user/" + userIdOnAuth,
                 this.header,
                 this.cookie
 
@@ -60,10 +65,11 @@ public class UserDeleteTest extends BaseTestCase{
     @Test
     @Description("Create user, authorize, delete and verify deletion")
     @DisplayName("Test positive user deletion")
+    @Severity(SeverityLevel.NORMAL)
     public void testDeleteJustCreatedUser() {
         Map<String, String> userData = DataGenerator.getRegistrationData();
         Response createResponse = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/",
+                Dev_URL + "user/",
                 userData
         );
 
@@ -74,7 +80,7 @@ public class UserDeleteTest extends BaseTestCase{
         authData.put("password", userData.get("password"));
 
         Response loginResponse = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/login",
+                Dev_URL+ "user/login",
                 authData
         );
 
@@ -82,7 +88,7 @@ public class UserDeleteTest extends BaseTestCase{
         String cookie = this.getCookie(loginResponse, "auth_sid");
 
         Response responseDelete = apiCoreRequests.makeDeleteRequest(
-                "https://playground.learnqa.ru/api/user/" + userId,
+                Dev_URL+ "user/" + userId,
                 header,
                 cookie
         );
@@ -91,7 +97,7 @@ public class UserDeleteTest extends BaseTestCase{
         Assertions.assertResponseCodeEquals(responseDelete, 200);
 
         Response getUserResponse = apiCoreRequests.makeGetRequest(
-                "https://playground.learnqa.ru/api/user/" + userId,
+                Dev_URL + "user/" + userId,
                 header,
                 cookie
         );
@@ -105,10 +111,11 @@ public class UserDeleteTest extends BaseTestCase{
     @Test
     @Description("Try to delete user being authorized as another user")
     @DisplayName("Test delete user as other user")
+    @Severity(SeverityLevel.NORMAL)
     public void testDeleteUserAsOtherUser() {
         Map<String, String> user1Data = DataGenerator.getRegistrationData();
         Response createUser1Response = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/",
+                Dev_URL + "user/",
                 user1Data
         );
 
@@ -116,7 +123,7 @@ public class UserDeleteTest extends BaseTestCase{
 
         Map<String, String> user2Data = DataGenerator.getRegistrationData();
         Response createUser2Response = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/",
+                Dev_URL + "user/",
                 user2Data
         );
 
@@ -125,7 +132,7 @@ public class UserDeleteTest extends BaseTestCase{
         authData.put("password", user2Data.get("password"));
 
         Response loginResponse = apiCoreRequests.makePostRequest(
-                "https://playground.learnqa.ru/api/user/login",
+                Dev_URL + "user/login",
                 authData
         );
 
@@ -133,7 +140,7 @@ public class UserDeleteTest extends BaseTestCase{
         String cookie = this.getCookie(loginResponse, "auth_sid");
 
         Response deleteResponse = apiCoreRequests.makeDeleteRequest(
-                "https://playground.learnqa.ru/api/user/" + user1Id,
+                Dev_URL+ "user/" + user1Id,
                 header,
                 cookie
         );
