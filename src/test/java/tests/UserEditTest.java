@@ -22,7 +22,7 @@ public class UserEditTest extends BaseTestCase {
 
     private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
 
-    @Test // создание пользователя
+    @Test // создание пользователя.
     @DisplayName("Positive: Edit just created user")
     @Severity(SeverityLevel.BLOCKER)
     public void testEditJustCreatedTest() {

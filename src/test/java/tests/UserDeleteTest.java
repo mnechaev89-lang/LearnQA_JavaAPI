@@ -1,8 +1,6 @@
 package tests;
 
 import io.qameta.allure.*;
-import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import lib.ApiCoreRequests;
 import lib.Assertions;

@@ -1,7 +1,9 @@
 lib\DataGenerator.class
 lib\BaseTestCase.class
+tests\UserDeleteTest.class
 tests\UserAuthTest.class
 tests\UserRegisterTest.class
 lib\Assertions.class
+tests\UserGetTest.class
 lib\ApiCoreRequests.class
 tests\UserEditTest.class

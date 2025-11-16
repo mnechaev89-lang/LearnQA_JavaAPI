@@ -23,7 +23,7 @@ public class BaseTestCase {
 
 
     }
-    // Метод для получения числа из JSON
+    // Метод для получения числа из JSON.
     protected int getIntFromJson(Response Response, String name) {
         Response.then().assertThat().body("$", hasKey(name));
         return Response.jsonPath().getInt(name);// получаем name как число из ответа

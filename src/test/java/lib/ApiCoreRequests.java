@@ -1,6 +1,5 @@
 package lib;
 
-import groovyjarjarantlr4.v4.codegen.model.SrcOp;
 import io.qameta.allure.Step;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.http.Header;
